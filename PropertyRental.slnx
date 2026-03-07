@@ -1,2 +1,6 @@
 <Solution>
+  <Project Path="PropertyRental.API/PropertyRental.API.csproj" />
+  <Project Path="PropertyRental.Application/PropertyRental.Application.csproj" />
+  <Project Path="PropertyRental.Domain/PropertyRental.Domain.csproj" />
+  <Project Path="PropertyRental.Infrastructure/PropertyRental.Infrastructure.csproj" />
 </Solution>
