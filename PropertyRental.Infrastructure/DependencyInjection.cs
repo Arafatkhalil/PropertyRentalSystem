@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PropertyRental.Application.Interfaces;
+using PropertyRental.Application.Services;
 using PropertyRental.Infrastructure.Persistence;
 
 namespace PropertyRental.Infrastructure
@@ -15,6 +16,10 @@ namespace PropertyRental.Infrastructure
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
+            services.AddScoped<IPropertyService, PropertyService>();
+            services.AddScoped<ITenantService, TenantService>();
+            services.AddScoped<ILeaseService, LeaseService>();
 
             return services;
         }
