@@ -54,13 +54,14 @@ namespace PropertyRental.Application.Services
             await _context.SaveChangesAsync(default);
         }
 
+        // Soft Delete: instead of removing, mark as deleted
         public async Task DeleteTenantAsync(int id)
         {
             var tenant = await _context.Tenants.FindAsync(id);
             if (tenant == null)
                 throw new KeyNotFoundException($"Tenant with Id {id} was not found.");
 
-            _context.Tenants.Remove(tenant);
+            tenant.IsDeleted = true;
             await _context.SaveChangesAsync(default);
         }
     }

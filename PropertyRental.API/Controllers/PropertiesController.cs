@@ -16,12 +16,14 @@ namespace PropertyRental.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PropertyDto>>> GetProperties(
+        public async Task<ActionResult<PagedResult<PropertyDto>>> GetProperties(
             [FromQuery] string? city = null,
-            [FromQuery] bool? isAvailable = null)
+            [FromQuery] bool? isAvailable = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var properties = await _propertyService.GetAllPropertiesAsync(city, isAvailable);
-            return Ok(properties);
+            var result = await _propertyService.GetAllPropertiesAsync(city, isAvailable, page, pageSize);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

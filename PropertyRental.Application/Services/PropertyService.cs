@@ -17,7 +17,7 @@ namespace PropertyRental.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PropertyDto>> GetAllPropertiesAsync(string? city = null, bool? isAvailable = null)
+        public async Task<PagedResult<PropertyDto>> GetAllPropertiesAsync(string? city = null, bool? isAvailable = null, int page = 1, int pageSize = 10)
         {
             var query = _context.Properties.AsQueryable();
 
@@ -27,8 +27,20 @@ namespace PropertyRental.Application.Services
             if (isAvailable.HasValue)
                 query = query.Where(p => p.IsAvailable == isAvailable.Value);
 
-            var properties = await query.ToListAsync();
-            return _mapper.Map<IEnumerable<PropertyDto>>(properties);
+            var totalCount = await query.CountAsync();
+
+            var properties = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<PropertyDto>
+            {
+                Items = _mapper.Map<List<PropertyDto>>(properties),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
         public async Task<PropertyDto?> GetPropertyByIdAsync(int id)
@@ -63,13 +75,14 @@ namespace PropertyRental.Application.Services
             await _context.SaveChangesAsync(default);
         }
 
+        // Soft Delete: instead of removing, mark as deleted
         public async Task DeletePropertyAsync(int id)
         {
             var property = await _context.Properties.FindAsync(id);
             if (property == null)
                 throw new KeyNotFoundException($"Property with Id {id} was not found.");
 
-            _context.Properties.Remove(property);
+            property.IsDeleted = true;
             await _context.SaveChangesAsync(default);
         }
     }
