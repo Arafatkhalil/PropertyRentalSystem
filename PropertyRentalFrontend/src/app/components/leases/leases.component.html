@@ -1,0 +1,77 @@
+<div class="container">
+    <h2>Leases</h2>
+    <button (click)="openCreateForm()" class="btn btn-primary">+ Create Lease</button>
+
+    <div *ngIf="showForm" class="form-card">
+        <h3>Create Lease</h3>
+        <div *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</div>
+        <form (ngSubmit)="save()">
+            <div class="form-group">
+                <label>Property</label>
+                <select [(ngModel)]="formData.propertyId" name="propertyId" required>
+                    <option [value]="0" disabled>Select Property</option>
+                    <option *ngFor="let p of properties" [value]="p.id">
+                        {{ p.name }} - {{ p.city }} ({{ p.isAvailable ? 'Available' : 'Not Available' }})
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tenant</label>
+                <select [(ngModel)]="formData.tenantId" name="tenantId" required>
+                    <option [value]="0" disabled>Select Tenant</option>
+                    <option *ngFor="let t of tenants" [value]="t.id">{{ t.fullName }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input [(ngModel)]="formData.startDate" name="startDate" type="date" required />
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input [(ngModel)]="formData.endDate" name="endDate" type="date" required />
+            </div>
+            <div class="form-group">
+                <label>Monthly Price</label>
+                <input [(ngModel)]="formData.monthlyPrice" name="monthlyPrice" type="number" required />
+            </div>
+            <button type="submit" class="btn btn-success">Create</button>
+            <button type="button" (click)="cancel()" class="btn btn-secondary">Cancel</button>
+        </form>
+    </div>
+
+    <div class="form-group" style="margin-top: 20px;">
+        <label>Filter by Property:</label>
+        <select [(ngModel)]="selectedPropertyId" (ngModelChange)="loadLeases()" name="filter">
+            <option [ngValue]="null" disabled>Select property to view leases</option>
+            <option *ngFor="let p of properties" [ngValue]="p.id">{{ p.name }}</option>
+        </select>
+    </div>
+
+    <table *ngIf="leases.length > 0" class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Property ID</th>
+                <th>Tenant ID</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Monthly Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let l of leases">
+                <td>{{ l.id }}</td>
+                <td>{{ l.propertyId }}</td>
+                <td>{{ l.tenantId }}</td>
+                <td>{{ l.startDate | date:'yyyy-MM-dd' }}</td>
+                <td>{{ l.endDate | date:'yyyy-MM-dd' }}</td>
+                <td>{{ l.monthlyPrice }}</td>
+                <td>
+                    <button (click)="endLease(l.id)" class="btn btn-sm btn-danger">End Lease</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p *ngIf="selectedPropertyId && leases.length === 0">No leases found for this property.</p>
+</div>
